@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 
+import org.apache.cassandra.config.DatabaseDescriptor;
 import org.apache.cassandra.db.Cell;
 import org.apache.cassandra.db.ColumnFamily;
 import org.apache.cassandra.db.DecoratedKey;
@@ -181,6 +182,9 @@ public class QueryFilter
                     }
                     else
                     {
+                        if(returnCF.deletionInfo().rangeCount() > DatabaseDescriptor.getTombstoneFailureThreshold()){
+                            throw new TombstoneOverwhelmingException();
+                        }
                         returnCF.addAtom(atom);
                     }
                 }
